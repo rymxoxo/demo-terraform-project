@@ -1,7 +1,7 @@
 provider "aws" {
   region     = "us-east-1"
-  access_key = "AKIAVWXXNLVHCGSIE3X5"
-  secret_key = "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"
+  access_key = "AKIASK3VTILNBVBJ6SJ3"
+  secret_key = "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"
 
 
 }
@@ -12,6 +12,9 @@ variable "env_prefix" {}
 variable "my_ip" {}
 variable "instance_type" {}
 variable "path_to_public_key" {
+
+}
+variable "private_key" {
 
 }
 
@@ -141,7 +144,29 @@ resource "aws_instance" "demo-app-server" {
   availability_zone           = var.avail_zone
   associate_public_ip_address = true
   key_name                    = aws_key_pair.ssh-key.key_name
-  user_data                   = file("entry-script.sh")
+  #user_data                   = file("entry-script.sh")
+  connection {
+    type        = "ssh"
+    host        = self.public_ip
+    user        = "ec2-user"
+    private_key = file(var.private_key)
+  }
+
+  /* You need t use the file provisoner to copy the file on the server because remote-exec works on the server not on our local machine */
+  provisioner "file" {
+    source      = "entry-script.sh"
+    destination = "/home/ec2-user/entry-script.sh"
+
+  }
+  provisioner "remote-exec" {
+    # inline = [
+    #   "EXPORT ENV=env",
+    #   "mkdir newdir"
+    # ]
+
+    /*If you want to have a script instead of inline commands */
+    script = file("entry-script.sh")
+  }
   tags = {
     Name : "${var.env_prefix}-server"
 
