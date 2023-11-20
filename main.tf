@@ -119,12 +119,11 @@ data "aws_ami" "latest_linux_image" {
   }
 
 }
-/* to verify the ami obejct we can use the output but don't forget to comment the next part of resource ;)*/
 
-# output "aws_ami_id" {
-#   value = data.aws_ami.latest_linux_image.id
+output "aws_ami_id" {
+  value = data.aws_ami.latest_linux_image.id
 
-# }
+}
 
 resource "aws_key_pair" "ssh-key" {
   key_name   = "server-key-1"
@@ -150,26 +149,6 @@ resource "aws_instance" "demo-app-server" {
     host        = self.public_ip
     user        = "ec2-user"
     private_key = file(var.private_key)
-  }
-
-  /* You need t use the file provisoner to copy the file on the server because remote-exec works on the server not on our local machine */
-  provisioner "file" {
-    source      = "entry-script.sh"
-    destination = "/home/ec2-user/entry-script.sh"
-
-  }
-  provisioner "remote-exec" {
-    # inline = [
-    #   "EXPORT ENV=env",
-    #   "mkdir newdir"
-    # ]
-
-    /*If you want to have a script instead of inline commands */
-    script = file("entry-script.sh")
-  }
-  tags = {
-    Name : "${var.env_prefix}-server"
-
   }
 
 }
