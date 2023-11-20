@@ -334,5 +334,6 @@ Make sure that the entry-script.sh file is in the same directory as your Terrafo
 
 Feel free to explore and tweak the entry-script.sh file to customize the Nginx deployment according to your project requirements
 With this final piece, your Terraform project orchestrates the creation of AWS infrastructure, sets up an EC2 instance, and deploys an Nginx Docker container, showcasing the power and flexibility of infrastructure as code with Terraform. 🚀🌐
-[![](https://visitcount.itsvg.in/api?id=rym&label=Profile%20Views&color=10&icon=5&pretty=true)](https://visitcount.itsvg.in)
 Feel free to reach out if you have any questions or need further assistance! Happy coding! 😊👩‍💻👨‍💻
+
+[![](https://visitcount.itsvg.in/api?id=rym&label=Profile%20Views&color=10&icon=5&pretty=true)](https://visitcount.itsvg.in)
