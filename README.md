@@ -336,3 +336,4 @@ Feel free to explore and tweak the entry-script.sh file to customize the Nginx d
 With this final piece, your Terraform project orchestrates the creation of AWS infrastructure, sets up an EC2 instance, and deploys an Nginx Docker container, showcasing the power and flexibility of infrastructure as code with Terraform. 🚀🌐
 
 Feel free to reach out if you have any questions or need further assistance! Happy coding! 😊👩‍💻👨‍💻
+[![](https://visitcount.itsvg.in/api?id=Rym&label=Profile%20Views&color=11&icon=5&pretty=true)](https://visitcount.itsvg.in)
