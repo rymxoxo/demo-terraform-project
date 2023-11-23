@@ -152,7 +152,7 @@ resource "aws_instance" "demo-app-server" {
     private_key = file(var.private_key)
   }
 
-  /* You need t use the file provisoner to copy the file on the server because remote-exec works on the server not on our local machine */
+  /* You need to use the file provisoner to copy the file on the server because remote-exec works on the server not on our local machine */
   provisioner "file" {
     source      = "entry-script.sh"
     destination = "/home/ec2-user/entry-script.sh"
