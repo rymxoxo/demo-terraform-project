@@ -144,11 +144,6 @@ resource "aws_instance" "demo-app-server" {
   associate_public_ip_address = true
   key_name                    = aws_key_pair.ssh-key.key_name
   #user_data                   = file("entry-script.sh")
-  connection {
-    type        = "ssh"
-    host        = self.public_ip
-    user        = "ec2-user"
-    private_key = file(var.private_key)
-  }
+
 
 }
