@@ -43,15 +43,13 @@ Throughout each part, I'll highlight the best practices learned from the demo pr
 
 ```bash
 # Create infrastructure from scratch
-terraform apply
 ```
-
-Leave the defaults created by AWS as they are.
 
 ```bash
-# 1. VPC & Subnet:
-terraform apply
+Leave the defaults created by AWS as they are.
 ```
+
+# 1. VPC & Subnet:
 
 In the development field, there are different stages:
 
@@ -193,9 +191,9 @@ Within the security group resource, we are going to tell the EC2 instance what r
 
 - SSH into EC2.
 - Access from the browser (to the instance).
-  - And outgoing (from the instance).
-    - Installation.
-    - Fetch Docker image.
+  And outgoing (from the instance) :
+- Installation.
+- Fetch Docker image.
 
 Let's break this down and understand it:
 
@@ -335,5 +333,17 @@ Make sure that the entry-script.sh file is in the same directory as your Terrafo
 Feel free to explore and tweak the entry-script.sh file to customize the Nginx deployment according to your project requirements
 With this final piece, your Terraform project orchestrates the creation of AWS infrastructure, sets up an EC2 instance, and deploys an Nginx Docker container, showcasing the power and flexibility of infrastructure as code with Terraform. 🚀🌐
 Feel free to reach out if you have any questions or need further assistance! Happy coding! 😊👩‍💻👨‍💻
+
+# Conclusion
+
+**Terraform Configures Infrastructure, NOT Servers**
+
+| Terraform Configuration Language | Simple Shell Script                   |
+| -------------------------------- | ------------------------------------- |
+| Manages Infrastructure           | Configures Provisioned Infrastructure |
+| Creates AWS Infrastructure       | Installs Docker on Server             |
+| Provisions Server                | Deploys an App on Server              |
+
+**Terraform provides the ability to execute scripts using the "USER_DATA" attribute. However, debugging can be challenging.**
 
 [![](https://visitcount.itsvg.in/api?id=rym&label=Profile%20Views&color=10&icon=5&pretty=true)](https://visitcount.itsvg.in)
