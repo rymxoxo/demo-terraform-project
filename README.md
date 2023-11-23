@@ -1,128 +1,114 @@
-**HELLO!**
-Welcome to the journey I've embarked on over the past few days, exploring and learning from a demo Terraform project. This project is divided into different branches, each addressing specific needs or exploring distinct features. Let's dive into the details of the `feature/deploy-ec2-default-component` branch, where we have a monolithic code structure with all the resources consolidated in one file, `main.tf`.
+**HELLO** 🌟
 
-## Let's Get Started
+Welcome to the demo project! In this branch, we'll explore the essential modules. Let's dive in:
 
-### Goals
+1. **Without Modules:**
 
-By the end of this demo project, you will:
+   - Complex configuration
+   - Huge file
+   - No overview
 
-1. Provision an EC2 instance on AWS infrastructure.
-2. Run an Nginx Docker container on the EC2 instance.
+2. **What is a Module?**
+   A module is a container for multiple resources used together. Think of it like a function. Customize the configuration with variables:
 
-### I. Provision AWS Infrastructure
+   - Input variables: Similar to arguments
+   - Output values: Resemble function return values
 
-1. **Create Custom VPC**
-2. **Create Custom Subnet**
-3. **Create Route Table & Internet Gateway**
-4. **Provision EC2 Instance**
-5. **Deploy Nginx Docker Container**
-6. **Create Security Group**
+3. **Why Modules?**
 
-Before delving into the technical details, let's first understand the terms mentioned:
+   - Organize and group configurations
+   - Encapsulate into distinct logical components
+   - Re-use
 
-**VPC (Virtual Private Cloud)**
-A VPC is an isolated network within cloud computing, allowing you to securely run and organize virtual resources such as servers and databases.
+   * Create our modules OR
+   * Use existing modules created by Terraform or other companies
+     - To be reused
+     - For different technologies/cloud providers
 
-**Subnet**
-A subnet is a network inside a network.
+## Modularize Our Project
 
-**Route Table**
-A route table contains rules (routes) that determine where network traffic is directed. Each subnet in a VPC must be associated with a route table, controlling traffic routing for the subnet. It's like a virtual router in a VPC.
+It's a bad practice to have many resources/code in just one `main.tf` file. It lacks overview.
 
-**Internet Gateway**
-Used in our VPC to connect or communicate with the internet, not for communication between subnets.
+## Project Structure
 
-**Security Group**
-A security group is like a firewall for an instance (not a subnet), and by default, its role is to restrict communication.
+- `main.tf`
+- `variables.tf`
+- `outputs.tf`
+- `providers.tf`
 
-## BEST PRACTICES
+The GOOD thing is that we don't have to link these files together because Terraform knows they belong together.
 
-Throughout each part, I'll highlight the best practices learned from the demo project.
+**1. Create Module**
+
+- Root module
+- `/modules` = "child modules" (a module called by another config)
+
+### Subnet Module
+
+This module comprises 3 resources:
+
+- Subnet
+- Internet Gateway
+- Default Route Table + Association
+
+Remember to change everything not called in `main.tf` inside this module, e.g., update `vpc_id`:
 
 ```bash
-# Create infrastructure from scratch
-terraform apply
+vpc_id = var.vpc_id
 ```
 
-Leave the defaults created by AWS as they are.
+Every associated variable should be declared in the `variables.tf` of this module.
+
+**2. Use the Module Now:**
+
+In `main.tf`:
 
 ```bash
-# 1. VPC & Subnet:
-terraform apply
-```
-
-In the development field, there are different stages:
-
-- `dev-vpc`
-- `staging-vpc`
-- `prod-vpc`
-
-Since this information is variable and can be one of the mentioned stages, we need to create a variable:
-
-```hcl
-variable "env_prefix" {}
-```
-
-The usage or call of this variable is generally within the VPC resource, as shown in the tags of the VPC resource:
-
-```hcl
-tags = {
-  Name : "${var.env_prefix}-vpc"
+module "demo-app-subnet-module" {
+  source                 = "./modules/subnet"
+  subnet_cidr_block      = var.subnet_cidr_block
+  avail_zone             = var.avail_zone
+  env_prefix             = var.env_prefix
+  vpc_id                 = aws_vpc.demo-app-vpc.id
+  default_route_table_id = aws_vpc.demo-app-vpc.default_route_table_id
 }
 ```
 
-Generally, the call of one variable is as follows:
+You can choose any name for your module, e.g., "demo-app-subnet-module".
 
-```hcl
-var.NAME_OF_VARIABLE
-```
+### Webserver Module
 
-But in this case, since the call is within a string, we have to use `${}`:
+This module includes:
 
-```hcl
-"${var.NAME_OF_VARIABLE}-some-text"
-```
+- Default Security Group
+- AWS AMI
+- AWS Key Pair
+- AWS Instance
 
-**Note:**
+Don't forget to set `vpc_id` and `subnet_id`.
 
-- There is a DEFAULT VPC for every region.
-- There is 1 default subnet per Availability Zone, e.g., if there are 3 AZs in a region, that means 3 default subnets in the VPC.
+**How Do We Access the Resource of a Child?**
+Use output values to expose or export resource attributes to the parent module for use by other modules.
 
-**Creation of Resources:**
-Terraform provides very detailed documentation, offering clear guidance and commands. For example: [Terraform AWS Default VPC Resource](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/default_vpc). Following this link, you'll find the "Resource: aws_default_vpc."
+In every module (subnet or webserver), we have a file named `outputs.tf`. For example:
 
-**Important:**
-Whatever resource you create, like a subnet or internet gateway, you need to mention in which VPC they are associated, and this is done by the following attribute:
-
-```hcl
-vpc_id = aws_vpc.demo-app-vpc.id
-```
-
-You specify more precisely the ID of the VPC. How do you call the attribute? Easy:
-
-```hcl
-vpc_id = aws_vpc.name_of_vpc_you_have_chosen.id
-```
-
-```hcl
-resource "aws_vpc" "demo-app-vpc" {
-  cidr_block = var.vpc_cidr_block
-  tags = {
-    Name : "${var.env_prefix}-vpc"
-  }
-}
-
-resource "aws_subnet" "demo-app-subnet-1" {
-  vpc_id            = aws_vpc.demo-app-vpc.id
-  cidr_block        = var.subnet_cidr_block
-  availability_zone = var.avail_zone
-  tags = {
-    Name : "${var.env_prefix}-subnet-1"
-  }
+```bash
+output "subnet" {
+  value = aws_subnet.demo-app-subnet-1
 }
 ```
 
-### Note
+or
 
-Ensure to follow the best practices mentioned in each section for an optimized and secure setup.
+```bash
+output "ec2-instance" {
+  value = aws_instance.demo-app-server
+}
+```
+
+Now, the module can be accessed by its name, "subnet" or "ec2-instance".
+
+**How to Refer to a Module?**
+`subnet_id = module.demo-app-subnet-module.subnet.id`
+
+[![Profile Views](https://visitcount.itsvg.in/api?id=moduleTF&label=Profile%20Views&color=11&icon=5&pretty=true)](https://visitcount.itsvg.in)
