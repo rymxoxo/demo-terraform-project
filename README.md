@@ -199,3 +199,4 @@ Provisioners can disrupt this comparison in the following ways:
 Uncertain Completion Timing: Provisioners execute after the resource is created, but the timing can be uncertain. Terraform may proceed to the next resource or step before the provisioner completes, leading to a mismatch between current and desired states.
 
 Unpredictable Changes: The changes made by provisioners may not be easily predictable or reflected immediately in Terraform's understanding of the state. This can lead to inconsistencies when trying to understand what Terraform perceives as the current state.
+[![](https://visitcount.itsvg.in/api?id=readmeprovisioner&label=Profile%20Views&color=11&icon=5&pretty=true)](https://visitcount.itsvg.in)
